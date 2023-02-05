@@ -5,7 +5,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-	<title>threejs - pixi v7</title>
+	<title>threejs - pixi v6</title>
 	<style>
 		body {
 			margin: 0;
@@ -23,11 +23,11 @@
 	<script type="importmap">
 		{
 			"imports": {
-				"three": "https://unpkg.com/three@0.146.0/build/three.module.js"
+				"three": "https://unpkg.com/three@0.149.0/build/three.module.js"
 			}
 		}
 	</script>
-	<script src="https://unpkg.com/pixi.js@7.0.2/dist/pixi.min.js"></script>
+	<script src="https://unpkg.com/pixi.js@6.2.1/dist/browser/pixi.min.js"></script>
 	<script type="module">
 		import * as THREE from 'three';
 
@@ -64,7 +64,7 @@
 		var app = new PIXI.Application( {
 			width,
 			height,
-			backgroundAlpha: 0
+			transparent: true
 		} );
 
 		var graphics = new PIXI.Graphics();
