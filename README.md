@@ -2,7 +2,8 @@
 
 > Demo for threejs with pixijs.
 
-![three-pixi](./three-pixi.png)
+<img src="./assets/three.svg" width="150px" />
+<img src="./assets/pixi.svg" width="150px" />
 
 ## priview links
 
