@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import * as PIXI from 'pixi';
+import * as THREE from "three";
+import * as PIXI from "pixi";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -9,74 +9,71 @@ const height = window.innerHeight;
 //-------------------------------------------------------------------------------------
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog( '#eeeeee', 2000, 4000 );
+scene.background = new THREE.Color("#eee");
+const camera = new THREE.PerspectiveCamera(50, width / height);
+camera.position.z = 5;
 
-const camera = new THREE.PerspectiveCamera( 75, width / height, 1, 10000 );
-camera.position.set( 0, 0, 700 );
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  transparent: true,
+});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(width, height);
+renderer.setAnimationLoop(animate);
+document.body.appendChild(renderer.domElement);
 
-const renderer = new THREE.WebGLRenderer( { antialias: true } );
-renderer.setPixelRatio( window.devicePixelRatio );
-renderer.setSize( width, height );
-renderer.setClearColor( scene.fog.color, 1 );
-document.body.appendChild( renderer.domElement );
-
-const geometry = new THREE.BoxGeometry( 500, 500, 500 );
+const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshNormalMaterial();
-const cube = new THREE.Mesh( geometry, material );
-cube.position.z = - 500;
-cube.rotation.z = - 45;
-scene.add( cube );
+const box = new THREE.Mesh(geometry, material);
+box.position.z = -1;
+scene.add(box);
 
 //-------------------------------------------------------------------------------------
 // 2D UI canvas
 //-------------------------------------------------------------------------------------
 
-const app = new PIXI.Application( {
-    width,
-    height,
-    backgroundAlpha: 0
-} );
+const app = new PIXI.Application({
+  width: 1024,
+  height: 1024,
+  backgroundAlpha: 0,
+});
 
-const graphics = new PIXI.Graphics();
-graphics.beginFill( 0xe60630 );
-graphics.moveTo( width / 2 - 200, height / 2 + 100 );
-graphics.lineTo( width / 2 - 200, height / 2 - 100 );
-graphics.lineTo( width / 2 + 200, height / 2 - 100 );
-graphics.lineTo( width / 2 + 200, height / 2 + 100 );
-graphics.endFill();
+const sprite = PIXI.Sprite.from("three-pixi.png");
+sprite.anchor.set(0.5);
+sprite.x = app.screen.width / 2;
+sprite.y = app.screen.height / 2;
+app.stage.addChild(sprite);
 
-app.stage.addChild( graphics );
+let elapsed = 0.0;
+app.ticker.add((delta) => {
+  elapsed += delta;
+  sprite.x = app.screen.width / 2 + Math.cos(elapsed / 50.0) * 100.0;
+});
 
 //-------------------------------------------------------------------------------------
 // Map 2D UI canvas on 3D Plane
 //-------------------------------------------------------------------------------------
 
-const texture = new THREE.Texture( app.view );
-texture.needsUpdate = true;
+const texture = new THREE.Texture(app.view);
 
-const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry( width + 100, height + 100 ),
-    new THREE.MeshBasicMaterial( {
-        map: texture,
-        side: THREE.DoubleSide,
-        transparent: true
-    } )
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(5, 5),
+  new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.DoubleSide,
+    transparent: true,
+  }),
 );
 
-scene.add( mesh );
+scene.add(plane);
 
 //-------------------------------------------------------------------------------------
 // Render Animation
 //-------------------------------------------------------------------------------------
 
-app.render();
-
 function animate() {
-
-    requestAnimationFrame( animate );
-    cube.rotation.y += 0.01;
-    renderer.render( scene, camera );
-
+  texture.needsUpdate = true;
+  box.rotation.x += 0.01;
+  box.rotation.y += 0.01;
+  renderer.render(scene, camera);
 }
-
-animate();
