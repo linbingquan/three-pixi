@@ -48,6 +48,7 @@ container.addChild(sprite);
 //-------------------------------------------------------------------------------------
 
 const texture = new THREE.Texture(app.view);
+texture.colorSpace = THREE.SRGBColorSpace;
 
 const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(5, 5),
