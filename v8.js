@@ -9,61 +9,75 @@ const height = window.innerHeight;
 //-------------------------------------------------------------------------------------
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color("#eee");
 const camera = new THREE.PerspectiveCamera(50, width / height);
-camera.position.z = 10;
+camera.position.z = 5;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  transparent: true,
+});
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(width, height);
+document.body.appendChild(renderer.domElement);
 
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshNormalMaterial();
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+const box = new THREE.Mesh(geometry, material);
+box.position.z = -1;
+scene.add(box);
 
 //-------------------------------------------------------------------------------------
 // 2D UI canvas
 //-------------------------------------------------------------------------------------
 
-const app = new PIXI.Application({
-  width,
-  height,
+const app = new PIXI.Application();
+await app.init({
+  width: 1024,
+  height: 1024,
   backgroundAlpha: 0,
 });
-document.body.appendChild(app.view);
 
-const sprite = PIXI.Sprite.from("three-pixi.png");
+const png = await PIXI.Assets.load('./three-pixi.png');
+const sprite = new PIXI.Sprite(png);
 sprite.anchor.set(0.5);
 sprite.x = app.screen.width / 2;
 sprite.y = app.screen.height / 2;
 app.stage.addChild(sprite);
 
 let elapsed = 0.0;
-app.ticker.add((delta) => {
-  elapsed += delta;
+app.ticker.add((time) => {
+  elapsed += time.deltaTime;
   sprite.x = app.screen.width / 2 + Math.cos(elapsed / 50.0) * 100.0;
 });
 
 //-------------------------------------------------------------------------------------
-// Map 3D UI canvas on 2D Plane
+// Map 2D UI canvas on 3D Plane
 //-------------------------------------------------------------------------------------
 
-const texture = new PIXI.BaseTexture(renderer.domElement);
-const threeSprite = new PIXI.Sprite(new PIXI.Texture(texture));
-threeSprite.anchor.set(0.5);
-threeSprite.x = app.screen.width / 2;
-threeSprite.y = app.screen.height / 2;
-app.stage.addChild(threeSprite);
+const texture = new THREE.Texture(app.canvas);
+texture.colorSpace = THREE.SRGBColorSpace;
+
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(5, 5),
+  new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.DoubleSide,
+    transparent: true,
+  }),
+);
+
+scene.add(plane);
 
 //-------------------------------------------------------------------------------------
 // Render Animation
 //-------------------------------------------------------------------------------------
 
 function animate() {
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
+  texture.needsUpdate = true;
+  box.rotation.x += 0.01;
+  box.rotation.y += 0.01;
   renderer.render(scene, camera);
-  texture.update();
 }
 
 renderer.setAnimationLoop(animate);

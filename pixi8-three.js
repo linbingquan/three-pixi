@@ -25,22 +25,25 @@ scene.add(mesh);
 // 2D UI canvas
 //-------------------------------------------------------------------------------------
 
-const app = new PIXI.Application({
+const app = new PIXI.Application();
+await app.init({
   width,
   height,
   backgroundAlpha: 0,
 });
-document.body.appendChild(app.view);
+document.body.appendChild(app.canvas);
 
-const sprite = PIXI.Sprite.from("three-pixi.png");
+const png = await PIXI.Assets.load('./three-pixi.png');
+const sprite = new PIXI.Sprite(png);
 sprite.anchor.set(0.5);
 sprite.x = app.screen.width / 2;
 sprite.y = app.screen.height / 2;
+sprite.zIndex = 1;
 app.stage.addChild(sprite);
 
 let elapsed = 0.0;
-app.ticker.add((delta) => {
-  elapsed += delta;
+app.ticker.add((time) => {
+  elapsed += time.deltaTime;
   sprite.x = app.screen.width / 2 + Math.cos(elapsed / 50.0) * 100.0;
 });
 
@@ -48,8 +51,9 @@ app.ticker.add((delta) => {
 // Map 3D UI canvas on 2D Plane
 //-------------------------------------------------------------------------------------
 
-const texture = new PIXI.BaseTexture(renderer.domElement);
-const threeSprite = new PIXI.Sprite(new PIXI.Texture(texture));
+const source = new PIXI.CanvasSource({ resource: renderer.domElement });
+const texture = new PIXI.Texture(source);
+const threeSprite = new PIXI.Sprite(texture);
 threeSprite.anchor.set(0.5);
 threeSprite.x = app.screen.width / 2;
 threeSprite.y = app.screen.height / 2;
@@ -63,7 +67,7 @@ function animate() {
   mesh.rotation.x += 0.01;
   mesh.rotation.y += 0.01;
   renderer.render(scene, camera);
-  texture.update();
+  source.update();
 }
 
 renderer.setAnimationLoop(animate);

@@ -9,11 +9,15 @@
 
 ### use three.js canvas dom
 
+[three-pixi8.html](https://linbingquan.github.io/three-pixi/three-pixi8.html)
+
 [three-pixi7.html](https://linbingquan.github.io/three-pixi/three-pixi7.html)
 
 [three-pixi6.html](https://linbingquan.github.io/three-pixi/three-pixi6.html)
 
 ### use pixi.js canvas dom
+
+[pixi8-three.html](https://linbingquan.github.io/three-pixi/pixi8-three.html)
 
 [pixi7-three.html](https://linbingquan.github.io/three-pixi/pixi7-three.html)
 
