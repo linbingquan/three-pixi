@@ -64,8 +64,8 @@ scene.add(plane);
 //-------------------------------------------------------------------------------------
 // Render Animation
 //-------------------------------------------------------------------------------------
-
-function animate() {
+function animate(time) {
+  sprite.x = app.screen.width / 2 + Math.cos(time / 1000.0) * 100;
   app.render(container);
   texture.needsUpdate = true;
   box.rotation.x += 0.01;
